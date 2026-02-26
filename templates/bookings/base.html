@@ -4,15 +4,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>{% block title %}Hotel Booking{% endblock %}</title>
+  <title>{% block title %}Travel Ease{% endblock %}</title>
   {% load static %}
   <link rel="stylesheet" href="{% static 'bookings/style.css' %}" />
+  {% if request.path|slice:":9" == "/vehicles" %}
+    <link rel="stylesheet" href="{% static 'vehicles/style.css' %}" />
+  {% endif %}
 </head>
 
-<body>
+<body class="{% if request.path|slice:":9" == "/vehicles" %}vehicles-theme{% endif %}">
   <header class="topbar">
     <div class="container topbar-inner">
-      <a class="brand" href="{% url 'booking:hotel_list' %}">HotelBooking</a>
+      <a class="brand" href="{% url 'booking:hotel_list' %}">
+        {% if request.path|slice:":9" == "/vehicles" %}
+          TravelEase <span class="brand-dot" aria-hidden="true">•</span> <span class="brand-sub">Vehicles</span>
+        {% else %}
+          TravelEase <span class="brand-dot" aria-hidden="true">•</span> <span class="brand-sub">Hotels</span>
+        {% endif %}
+      </a>
+
+      <div class="section-tabs" aria-label="Section navigation">
+        <a class="tab {% if request.path|slice:":9" != "/vehicles" %}active{% endif %}" href="{% url 'booking:hotel_list' %}">Hotels</a>
+        <a class="tab {% if request.path|slice:":9" == "/vehicles" %}active vehicles{% endif %}" href="{% url 'vehicles:vehicle_list' %}">Vehicles</a>
+      </div>
 
       <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="mainNav"
         id="navToggleBtn">
@@ -21,12 +35,13 @@
 
       <nav class="nav" id="mainNav">
         {% if user.is_authenticated %}
-        <a href="{% url 'booking:my_bookings' %}">My Bookings</a>
-        <span class="chip">Hi, {{ user.username }}</span>
-        <a href="{% url 'booking:logout' %}">Logout</a>
+          <a href="{% url 'booking:my_bookings' %}">My Hotel Bookings</a>
+          <a href="{% url 'vehicles:my_rentals' %}">My Rentals</a>
+          <span class="chip">Hi, {{ user.username }}</span>
+          <a href="{% url 'booking:logout' %}">Logout</a>
         {% else %}
-        <a href="{% url 'booking:login' %}">Login</a>
-        <a href="{% url 'booking:signup' %}">Sign Up</a>
+          <a href="{% url 'booking:login' %}">Login</a>
+          <a href="{% url 'booking:signup' %}">Sign Up</a>
         {% endif %}
 
       </nav>
@@ -59,7 +74,7 @@
   <main class="container">{% block content %}{% endblock %}</main>
 
   <footer class="footer">
-    <div class="container">© {{ now|date:"Y" }} HotelBooking</div>
+    <div class="container">© {{ now|date:"Y" }} TravelEase</div>
   </footer>
 
 </body>

@@ -1,0 +1,35 @@
+{% extends "bookings/base.html" %}
+{% block title %}Vehicles{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Rent a Vehicle</h1>
+
+<form class="searchbar" method="get">
+  <input type="text" name="q" placeholder="Search vehicle name/model..." value="{{ q }}">
+  <input type="text" name="city" placeholder="City..." value="{{ city }}">
+  <select name="type">
+    <option value="">All types</option>
+    <option value="car" {% if type == 'car' %}selected{% endif %}>Car</option>
+    <option value="suv" {% if type == 'suv' %}selected{% endif %}>SUV</option>
+    <option value="van" {% if type == 'van' %}selected{% endif %}>Van</option>
+    <option value="bike" {% if type == 'bike' %}selected{% endif %}>Bike</option>
+    <option value="scooter" {% if type == 'scooter' %}selected{% endif %}>Scooter</option>
+  </select>
+  <button type="submit">Search</button>
+</form>
+
+<div class="grid">
+  {% for v in vehicles %}
+  <a class="card" href="{% url 'vehicles:vehicle_detail' v.id %}">
+    {% if v.image %}
+    <img src="{{ v.image.url }}" class="card-img" alt="{{ v.name }}">
+    {% endif %}
+    <h3>{{ v.name }}</h3>
+    <p class="muted">{{ v.get_vehicle_type_display }} · {{ v.shop.city }} · {{ v.shop.name }}</p>
+    <p class="price">₹ {{ v.price_per_day }} / day</p>
+  </a>
+  {% empty %}
+  <p>No vehicles found.</p>
+  {% endfor %}
+</div>
+{% endblock %}

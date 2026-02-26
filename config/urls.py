@@ -22,6 +22,7 @@ from config import settings
 
 urlpatterns = [
     path('', include('booking.urls')),
+    path('vehicles/', include('vehicles.urls')),
     path('admin/', admin.site.urls),
 ]
 if settings.DEBUG:

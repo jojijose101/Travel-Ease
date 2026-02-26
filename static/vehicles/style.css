@@ -1,0 +1,47 @@
+/* Vehicle rental theme: white + light-red accents */
+:root{
+  --veh-accent: #ff4d4d;
+  --veh-accent-2: #ff8a8a;
+  --veh-ink: #111;
+  --veh-muted: #60646c;
+  --veh-card: #ffffff;
+  --veh-stroke: rgba(17,17,17,.10);
+}
+
+body.vehicles-theme{
+  background: #ffffff;
+}
+
+.veh-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,77,77,.14);
+  color: #fff;
+  font-weight: 900;
+}
+
+/* vehicle cards tweaks */
+.vehicles-theme .card{
+  border: 1px solid var(--veh-stroke);
+}
+
+.vehicles-theme .btn-primary,
+.vehicles-theme button[type="submit"]{
+  background: var(--veh-accent);
+}
+
+.vehicles-theme .btn-primary:hover,
+.vehicles-theme button[type="submit"]:hover{
+  filter: brightness(0.95);
+}
+
+.vehicles-theme .price{
+  color: var(--veh-accent);
+  font-weight: 900;
+}
+
+.vehicles-theme .muted{ color: var(--veh-muted); }
+

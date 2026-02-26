@@ -1,0 +1,128 @@
+{% extends "bookings/base.html" %}
+{% block title %}Book Vehicle{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'vehicles:vehicle_detail' vehicle.id %}">← Back</a>
+
+<section class="book-wrap">
+
+  <!-- LEFT: Vehicle Preview -->
+  <div class="card book-left">
+    <div class="img-box">
+      {% if vehicle.image %}
+        <img src="{{ vehicle.image.url }}" alt="{{ vehicle.name }}">
+      {% else %}
+        <div class="img-placeholder">No Image</div>
+      {% endif %}
+    </div>
+
+    <h2 class="room-title">{{ shop.name }} • {{ vehicle.name }}</h2>
+    <p class="muted">
+      {{ shop.city }}
+      {% if shop.address %} • {{ shop.address }}{% endif %}
+    </p>
+
+    <div class="info-row">
+      <div class="info-pill">Type: <b>{{ vehicle.get_vehicle_type_display }}</b></div>
+      <div class="info-pill">Seats: <b>{{ vehicle.seats }}</b></div>
+      <div class="info-pill price-pill">₹ {{ vehicle.price_per_day }} / day</div>
+    </div>
+
+    {% if preview_available is not None %}
+      <div class="alert alert-info" style="margin-top:12px;">
+        Availability for selected dates: <b>{{ preview_available }}</b>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- RIGHT: Booking Form -->
+  <div class="card book-right">
+    <h1 class="page-title" style="margin-top:0;">Confirm your rental</h1>
+    <p class="muted">Enter pickup/drop dates and number of vehicles.</p>
+
+    {% if errors %}
+      <div class="alert alert-error">
+        <b>Please fix the errors below.</b>
+      </div>
+    {% endif %}
+
+    <form method="post" class="form" novalidate>
+      {% csrf_token %}
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="pickup_date">Pickup</label>
+          <input type="date" id="pickup_date" name="pickup_date" min="{% now 'Y-m-d' %}" value="{{ values.pickup_date }}" required>
+          {% if errors.pickup_date %}<div class="field-error">{{ errors.pickup_date }}</div>{% endif %}
+        </div>
+
+        <div class="form-row">
+          <label for="dropoff_date">Drop-off</label>
+          <input type="date" id="dropoff_date" name="dropoff_date" value="{{ values.dropoff_date }}" required>
+          {% if errors.dropoff_date %}<div class="field-error">{{ errors.dropoff_date }}</div>{% endif %}
+        </div>
+
+        <div class="form-row" style="grid-column: 1 / -1;">
+          <label for="units_count">Vehicles (units)</label>
+          <input type="number" id="units_count" name="units_count" min="1" value="{{ values.units_count }}" required>
+          {% if errors.units_count %}<div class="field-error">{{ errors.units_count }}</div>{% endif %}
+        </div>
+
+        <div class="form-row" style="grid-column: 1 / -1;">
+          <label for="pickup_location">Pickup location</label>
+          <input type="text" id="pickup_location" name="pickup_location" value="{{ values.pickup_location }}">
+        </div>
+
+        <div class="form-row" style="grid-column: 1 / -1;">
+          <label for="dropoff_location">Drop-off location</label>
+          <input type="text" id="dropoff_location" name="dropoff_location" value="{{ values.dropoff_location }}">
+        </div>
+      </div>
+
+      <div class="summary">
+        <div class="summary-row"><span>Price per day</span><b>₹ <span id="pricePerDay">{{ vehicle.price_per_day }}</span></b></div>
+        <div class="summary-row"><span>Days</span><b><span id="daysCount">0</span></b></div>
+        <div class="summary-row"><span>Units</span><b><span id="unitsCountPreview">{{ values.units_count|default:"1" }}</span></b></div>
+        <hr style="border:none;border-top:1px solid #eee;margin:10px 0;">
+        <div class="summary-row"><span>Estimated total</span><b>₹ <span id="totalPrice">0</span></b></div>
+        <p class="muted small" style="margin:8px 0 0;">(Estimate. Final total = days × units × price.)</p>
+      </div>
+
+      <button type="submit" class="btn-primary">Proceed to Pay</button>
+    </form>
+  </div>
+</section>
+
+<script>
+  (function(){
+    const pickup = document.getElementById('pickup_date');
+    const dropoff = document.getElementById('dropoff_date');
+    const units = document.getElementById('units_count');
+
+    const priceEl = document.getElementById('pricePerDay');
+    const daysEl = document.getElementById('daysCount');
+    const unitsPrev = document.getElementById('unitsCountPreview');
+    const totalEl = document.getElementById('totalPrice');
+
+    function calc(){
+      const p = parseFloat((priceEl?.textContent || '0')) || 0;
+      const u = parseInt(units?.value || '1', 10) || 1;
+
+      let d = 0;
+      if (pickup?.value && dropoff?.value){
+        const a = new Date(pickup.value);
+        const b = new Date(dropoff.value);
+        const diff = (b - a) / (1000*60*60*24);
+        d = diff > 0 ? diff : 0;
+      }
+
+      if (daysEl) daysEl.textContent = String(d);
+      if (unitsPrev) unitsPrev.textContent = String(u);
+      if (totalEl) totalEl.textContent = String(Math.round(p * d * u));
+    }
+
+    [pickup, dropoff, units].forEach(el => el && el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+{% endblock %}

@@ -661,3 +661,37 @@ body {
 
   .card { min-height: auto; }
 }
+
+/* ===== Section Tabs (Hotels / Vehicles) ===== */
+.section-tabs{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+
+.section-tabs .tab{
+  color:#fff;
+  text-decoration:none;
+  font-weight:900;
+  font-size:13px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.section-tabs .tab.active{
+  background: rgba(255,255,255,0.22);
+}
+
+.section-tabs .tab.vehicles.active{
+  background: rgba(255,77,77,0.22);
+  border-color: rgba(255,77,77,0.34);
+}
+
+.brand-dot{ opacity: 0.55; margin: 0 6px; }
+.brand-sub{ opacity: 0.85; font-weight: 800; font-size: 13px; }
+
+@media (max-width: 720px){
+  .section-tabs{ display:none; }
+}

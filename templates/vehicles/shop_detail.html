@@ -1,0 +1,38 @@
+{% load bookings_extras %}
+{% extends "bookings/base.html" %}
+{% block title %}{{ shop.name }}{% endblock %}
+
+{% block content %}
+<a class="back" href="{% url 'vehicles:vehicle_list' %}">← Back to Vehicles</a>
+
+<h1 class="page-title">{{ shop.name }}</h1>
+<p class="muted">{{ shop.city }}{% if shop.address %} · {{ shop.address }}{% endif %}</p>
+{% if shop.description %}<p>{{ shop.description }}</p>{% endif %}
+
+<form class="searchbar" method="get">
+  <input type="date" name="pickup" value="{{ pickup }}" required>
+  <input type="date" name="dropoff" value="{{ dropoff }}" required>
+  <button type="submit">Check availability</button>
+</form>
+
+<div class="grid">
+  {% for v in vehicles %}
+  <div class="card">
+    {% if v.image %}
+    <img src="{{ v.image.url }}" class="card-img" alt="{{ v.name }}">
+    {% endif %}
+    <h3><a href="{% url 'vehicles:vehicle_detail' v.id %}">{{ v.name }}</a></h3>
+    <p class="muted">{{ v.get_vehicle_type_display }} · {{ v.seats }} seats · {{ v.get_transmission_display }}{% if v.fuel %} · {{ v.fuel }}{% endif %}</p>
+    <p class="price">₹ {{ v.price_per_day }} / day</p>
+
+    {% if pickup and dropoff %}
+      <p class="muted">Available: <strong>{{ availability|get_item:v.id|default:"-" }}</strong></p>
+    {% endif %}
+
+    <a class="btn" href="{% url 'vehicles:book_vehicle' v.id %}?pickup={{ pickup }}&dropoff={{ dropoff }}">Book</a>
+  </div>
+  {% empty %}
+  <p>No vehicles available.</p>
+  {% endfor %}
+</div>
+{% endblock %}

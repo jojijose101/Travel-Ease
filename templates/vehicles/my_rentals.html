@@ -1,0 +1,23 @@
+{% extends "bookings/base.html" %}
+{% block title %}My Rentals{% endblock %}
+
+{% block content %}
+  <h1 class="page-title">My Rentals</h1>
+
+  <div class="grid">
+    {% for r in rentals %}
+      <div class="card">
+        <h3>{{ r.vehicle.shop.name }} • {{ r.vehicle.name }}</h3>
+        <p class="muted">{{ r.pickup_date }} → {{ r.dropoff_date }}</p>
+        <p class="muted">Units: {{ r.units_count }}</p>
+        <p class="muted">Status: <b>{{ r.status }}</b> {% if r.is_paid %}· <b>Paid</b>{% else %}· <b>Unpaid</b>{% endif %}</p>
+
+        {% if r.status == "confirmed" %}
+          <a class="btn-link" href="{% url 'vehicles:cancel_rental' r.id %}">Cancel</a>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p>No rentals yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}
