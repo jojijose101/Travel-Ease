@@ -1,0 +1,134 @@
+{% extends 'partners/base_partner.html' %}
+{% load static %}
+{% block title %}Hotel Partner Dashboard{% endblock %}
+
+{% block content %}
+{% block extra_css %} <link rel="stylesheet" href="{% static 'css/dash.css' %}"> {% endblock %}
+<div class="container">
+
+  <div class="dash-head">
+    <div>
+      <h2 class="page-title">Hotel Partner Dashboard</h2>
+      <p class="muted">Manage hotels, rooms, and track recent bookings.</p>
+    </div>
+
+    <div class="dash-actions">
+      <a class="btn btn-primary" href="{% url 'Hotels:hotel_partner_hotel_add' %}">+ Add Hotel</a>
+      <a class="btn btn-outline" href="{% url 'Hotels:hotel_partner_room_add' %}">+ Add Room</a>
+    </div>
+  </div>
+
+  <div class="grid2 dash-grid">
+    <div class="card dash-card">
+      <div class="card-head">
+        <h3>Your Hotels</h3>
+        <div class="card-actions">
+          <a class="btn btn-outline" href="{% url 'Hotels:hotel_partner_hotels' %}">Manage Hotels</a>
+        </div>
+      </div>
+
+      <ul class="hotel-list">
+        {% for h in hotels %}
+          <li class="hotel-item">
+            <div class="hotel-main">
+              <strong class="hotel-name">{{ h.name }}</strong>
+              <span class="hotel-city muted">{{ h.city }}</span>
+            </div>
+
+            {% if not h.is_active %}
+              <span class="pill pill-inactive">Inactive</span>
+            {% else %}
+              <span class="pill pill-active">Active</span>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li class="empty-line">No hotels yet.</li>
+        {% endfor %}
+      </ul>
+
+      <div class="card-foot">
+        <a class="btn btn-outline" href="{% url 'Hotels:hotel_partner_hotel_add' %}">+ Add Hotel</a>
+      </div>
+    </div>
+
+    <div class="card dash-card">
+      <div class="card-head">
+        <h3>Quick Links</h3>
+      </div>
+
+      <div class="quick-links">
+        <a class="quick" href="{% url 'Hotels:hotel_partner_rooms' %}">
+          <span class="quick-title">Manage Rooms</span>
+          <span class="quick-sub muted">Edit rooms, pricing, availability</span>
+        </a>
+
+        <a class="quick" href="{% url 'Hotels:hotel_partner_bookings' %}">
+          <span class="quick-title">View Bookings</span>
+          <span class="quick-sub muted">See bookings and customer details</span>
+        </a>
+
+        <a class="quick" href="{% url 'Hotels:hotel_partner_room_add' %}">
+          <span class="quick-title">Add Room</span>
+          <span class="quick-sub muted">Create a new room for a hotel</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h3 class="section-title">Recent Bookings</h3>
+    <a class="btn btn-outline" href="{% url 'Hotels:hotel_partner_bookings' %}">All Bookings</a>
+  </div>
+
+  <div class="card panel">
+    <div class="tablewrap booking-table">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Guest</th>
+            <th>Hotel</th>
+            <th>Room</th>
+            <th>Dates</th>
+            <th>Rooms</th>
+            <th>Status</th>
+            <th>Paid</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+          <tr onclick="window.location='{% url 'Hotels:partner_hotel_booking_detail' b.id %}'" class="row-click">
+            <td data-label="Guest">{{ b.user.username }}</td>
+            <td data-label="Hotel">{{ b.room.hotel.name }}</td>
+            <td data-label="Room">{{ b.room.name }}</td>
+            <td data-label="Dates">{{ b.check_in }} → {{ b.check_out }}</td>
+            <td data-label="Rooms">{{ b.rooms_count }}</td>
+
+            <td data-label="Status">
+              <span class="status-pill {% if b.status %}st-{{ b.status|lower }}{% endif %}">
+                {{ b.status }}
+              </span>
+            </td>
+
+            <td data-label="Paid">
+              {% if b.is_paid %}
+                <span class="paid-pill yes">Yes</span>
+              {% else %}
+                <span class="paid-pill no">No</span>
+              {% endif %}
+            </td>
+
+            <td class="actions" data-label="Action" onclick="event.stopPropagation();">
+              <a href="{% url 'Hotels:partner_hotel_booking_detail' b.id %}" class="btn-view">View Details</a>
+            </td>
+          </tr>
+          {% empty %}
+            <tr><td colspan="8" class="empty">No bookings yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

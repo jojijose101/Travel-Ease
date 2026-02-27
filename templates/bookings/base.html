@@ -10,6 +10,8 @@
   {% if request.path|slice:":9" == "/vehicles" %}
     <link rel="stylesheet" href="{% static 'vehicles/style.css' %}" />
   {% endif %}
+  {% block extra_css %}{% endblock %}
+
 </head>
 
 <body class="{% if request.path|slice:":9" == "/vehicles" %}vehicles-theme{% endif %}">
@@ -37,6 +39,11 @@
         {% if user.is_authenticated %}
           <a href="{% url 'booking:my_bookings' %}">My Hotel Bookings</a>
           <a href="{% url 'vehicles:my_rentals' %}">My Rentals</a>
+          {% if user_role == 'hotel_partner' %}
+            <a href="{% url 'Hotels:hotel_partner_dashboard' %}">Hotel Partner Dashboard</a>
+          {% elif user_role == 'rental_partner' %}
+            <a href="{% url 'vehicles:rental_partner_dashboard' %}">Rental Partner Dashboard</a>
+          {% endif %}
           <span class="chip">Hi, {{ user.username }}</span>
           <a href="{% url 'booking:logout' %}">Logout</a>
         {% else %}

@@ -1,0 +1,116 @@
+/* ===== Partner Form (Django form.as_p) ===== */
+
+.form-head{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 10px 0 12px;
+}
+
+.form-card{
+  padding: 16px;
+  border-radius: 16px;
+}
+
+.partner-form{
+  display:grid;
+  gap: 14px;
+}
+
+/* Style form.as_p output */
+.form-fields p{
+  margin: 0 0 12px;
+}
+
+.form-fields label{
+  display:block;
+  margin-bottom: 6px;
+  font-weight: 900;
+  font-size: 13px;
+  color: rgba(0,0,0,.78);
+}
+
+/* Inputs */
+.form-fields input[type="text"],
+.form-fields input[type="email"],
+.form-fields input[type="number"],
+.form-fields input[type="tel"],
+.form-fields input[type="url"],
+.form-fields input[type="file"],
+.form-fields input[type="password"],
+.form-fields input[type="date"],
+.form-fields input[type="time"],
+.form-fields select,
+.form-fields textarea{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.12);
+  background:#fff;
+  outline:none;
+  font-size: 14px;
+}
+
+/* Focus accent */
+.form-fields input:focus,
+.form-fields select:focus,
+.form-fields textarea:focus{
+  border-color: rgba(255,77,77,.55);
+  box-shadow: 0 0 0 4px rgba(255,77,77,.14);
+}
+
+/* Help text */
+.form-fields .helptext{
+  display:block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: rgba(0,0,0,.56);
+}
+
+/* Errors */
+.errorlist{
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  list-style: none;
+  border-radius: 14px;
+  background: rgba(198,40,40,.10);
+  border: 1px solid rgba(198,40,40,.20);
+  color: #8b0000;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+/* Checkbox fields */
+.form-fields input[type="checkbox"]{
+  transform: scale(1.05);
+  margin-right: 8px;
+}
+.form-fields p:has(input[type="checkbox"]) label{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+/* Actions row */
+.form-actions{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,.08);
+}
+
+.form-actions .btn{
+  min-width: 140px;
+}
+
+/* Mobile */
+@media (max-width: 560px){
+  .form-card{ padding: 14px; }
+  .form-actions{ flex-direction: column; }
+  .form-actions .btn{ width:100%; min-width:0; }
+}

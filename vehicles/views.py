@@ -6,12 +6,22 @@ import razorpay
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from accounts.utils import role_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.dateparse import parse_date
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import RentalShop, Vehicle, VehicleBooking
+from .models import RentalShop, Vehicle
+from .forms import RentalShopForm, VehicleForm
+from booking.models import VehicleBooking
+from django.core.exceptions import PermissionDenied
+
+
+
+# -------------------------
+# Customer vehicle rental views
+# -------------------------
 
 
 def vehicle_list(request):
@@ -75,6 +85,7 @@ def vehicle_detail(request, vehicle_id):
 
     return render(request, 'vehicles/vehicle_detail.html', {
         'vehicle': vehicle,
+        'shop': vehicle.shop,
         'pickup': pickup_raw,
         'dropoff': dropoff_raw,
         'available': available,
@@ -98,6 +109,7 @@ def book_vehicle(request, vehicle_id):
             'units_count': (request.POST.get('units_count') or '1').strip(),
             'pickup_location': (request.POST.get('pickup_location') or '').strip(),
             'dropoff_location': (request.POST.get('dropoff_location') or '').strip(),
+            'mobile_number': (request.POST.get('mobile_number') or '').strip(),
         }
     else:
         values = {
@@ -106,12 +118,14 @@ def book_vehicle(request, vehicle_id):
             'units_count': '1',
             'pickup_location': vehicle.shop.city,
             'dropoff_location': vehicle.shop.city,
+            'mobile_number': getattr(getattr(request.user, 'profile', None), 'mobile_number', ''),
         }
 
     if request.method == 'POST':
         pickup_raw = values['pickup_date']
         dropoff_raw = values['dropoff_date']
         units_raw = values['units_count']
+        mobile_raw = values.get('mobile_number', '')
 
         pickup_date = None
         dropoff_date = None
@@ -140,6 +154,12 @@ def book_vehicle(request, vehicle_id):
             errors['units_count'] = 'Units must be a number.'
             units_count = None
 
+        # Mobile number validation (optional)
+        if mobile_raw:
+            digits = mobile_raw.replace('+', '')
+            if not digits.isdigit() or not (10 <= len(digits) <= 15):
+                errors['mobile_number'] = 'Enter a valid mobile number (10–15 digits).'
+
         today = date.today()
         if pickup_date and dropoff_date:
             if pickup_date >= dropoff_date:
@@ -158,6 +178,7 @@ def book_vehicle(request, vehicle_id):
                 booking = VehicleBooking.objects.create(
                     user=request.user,
                     vehicle=vehicle,
+                    mobile_number=mobile_raw or None,
                     pickup_date=pickup_date,
                     dropoff_date=dropoff_date,
                     pickup_location=values.get('pickup_location', ''),
@@ -167,6 +188,14 @@ def book_vehicle(request, vehicle_id):
                     is_paid=False,
                     amount_paise=amount,
                 )
+
+                # Store to profile if empty
+                try:
+                    if mobile_raw and hasattr(request.user, 'profile') and not request.user.profile.mobile_number:
+                        request.user.profile.mobile_number = mobile_raw
+                        request.user.profile.save(update_fields=['mobile_number'])
+                except Exception:
+                    pass
 
                 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
                 raz_order = client.order.create({
@@ -257,3 +286,106 @@ def cancel_rental(request, booking_id):
         return redirect('vehicles:my_rentals')
 
     return render(request, 'vehicles/cancel_rental.html', {'booking': booking})
+
+
+@role_required(['rental_partner'])
+def rental_partner_dashboard(request):
+    shops = RentalShop.objects.filter(owner=request.user).order_by('-id')
+    vehicles = Vehicle.objects.filter(shop__owner=request.user).select_related('shop').order_by('-id')[:10]
+    bookings = VehicleBooking.objects.filter(vehicle__shop__owner=request.user).select_related('vehicle', 'vehicle__shop', 'user').order_by('-created_at')[:10]
+    return render(request, "partners/rentals/dashboard.html", {
+        "shops": shops,
+        "vehicles": vehicles,
+        "bookings": bookings,
+    })
+
+@role_required(['rental_partner'])
+def rental_partner_shops(request):
+    shops = RentalShop.objects.filter(owner=request.user).order_by('-id')
+    return render(request, "partners/rentals/shops_list.html", {"shops": shops})
+
+@role_required(['rental_partner'])
+def rental_partner_shop_add(request):
+    if request.method == "POST":
+        form = RentalShopForm(request.POST, request.FILES)
+        if form.is_valid():
+            shop = form.save(commit=False)
+            shop.owner = request.user
+            shop.save()
+            messages.success(request, "Rental shop added.")
+            return redirect("vehicles:rental_partner_shops")
+    else:
+        form = RentalShopForm()
+    return render(request, "partners/rentals/shop_form.html", {"form": form, "mode": "add"})
+
+@role_required(['rental_partner'])
+def rental_partner_shop_edit(request, shop_id):
+    shop = get_object_or_404(RentalShop, id=shop_id, owner=request.user)
+    if request.method == "POST":
+        form = RentalShopForm(request.POST, request.FILES, instance=shop)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Rental shop updated.")
+            return redirect("vehicles:rental_partner_shops")
+    else:
+        form = RentalShopForm(instance=shop)
+    return render(request, "partners/rentals/shop_form.html", {"form": form, "mode": "edit"})
+
+@role_required(['rental_partner'])
+def rental_partner_vehicles(request):
+    vehicles = Vehicle.objects.filter(shop__owner=request.user).select_related('shop').order_by('-id')
+    return render(request, "partners/rentals/vehicles_list.html", {"vehicles": vehicles})
+
+@role_required(['rental_partner'])
+def rental_partner_vehicle_add(request):
+    if request.method == "POST":
+        form = VehicleForm(request.POST, request.FILES, owner=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Vehicle added.")
+            return redirect("vehicles:rental_partner_vehicles")
+    else:
+        form = VehicleForm(owner=request.user)
+    return render(request, "partners/rentals/vehicle_form.html", {"form": form, "mode": "add"})
+
+@role_required(['rental_partner'])
+def rental_partner_vehicle_edit(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, id=vehicle_id, shop__owner=request.user)
+    if request.method == "POST":
+        form = VehicleForm(request.POST, request.FILES, instance=vehicle, owner=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Vehicle updated.")
+            return redirect("vehicles:rental_partner_vehicles")
+    else:
+        form = VehicleForm(instance=vehicle, owner=request.user)
+    return render(request, "partners/rentals/vehicle_form.html", {"form": form, "mode": "edit"})
+
+@role_required(['rental_partner'])
+def rental_partner_bookings(request):
+    bookings = VehicleBooking.objects.filter(vehicle__shop__owner=request.user).select_related('vehicle', 'vehicle__shop', 'user').order_by('-created_at')
+    return render(request, "partners/rentals/bookings_list.html", {"bookings": bookings})
+
+
+@role_required(['rental_partner'])
+def partner_rental_booking_detail(request, booking_id):
+    """
+    Rental partner sees bookings for ONLY their shop vehicles.
+    Must filter by ownership (shop.owner == request.user).
+    """
+    if getattr(request.user, "profile", None) and request.user.profile.role != "rental_partner":
+        raise PermissionDenied("Not allowed")
+
+    booking = get_object_or_404(VehicleBooking, id=booking_id)
+
+    # IMPORTANT: adjust relationship names:
+    # Example assumes: VehicleBooking -> Vehicle -> RentalShop and RentalShop has owner field
+    shop = booking.vehicle.shop
+    if shop.owner_id != request.user.id:
+        raise PermissionDenied("Not allowed")
+
+    return render(
+        request,
+        "partners/rentals/partner_rental_booking_detail.html",
+        {"booking": booking, "shop": shop},
+    )

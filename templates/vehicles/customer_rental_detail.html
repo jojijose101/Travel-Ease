@@ -1,0 +1,65 @@
+{% extends "bookings/base.html" %}
+{% load static %}
+{% block title %}Rental Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="bd-wrap">
+  <div class="bd-card">
+    <div class="bd-head">
+      <div>
+        <h2 class="bd-title">Vehicle Rental Details</h2>
+        <p class="bd-sub">Booking ID: <span class="bd-pill">#{{ booking.id }}</span></p>
+      </div>
+      <div class="bd-status">
+        <span class="bd-badge bd-badge--{{ booking.status|default:'placed' }}">{{ booking.status|default:"Placed" }}</span>
+        {% if booking.is_paid %}
+          <span class="bd-badge bd-badge--paid">Paid</span>
+        {% else %}
+          <span class="bd-badge bd-badge--unpaid">Unpaid</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="bd-grid">
+      <div class="bd-section">
+        <h3>Shop</h3>
+        <div class="bd-row"><span>Name</span><b>{{ booking.vehicle.shop.name }}</b></div>
+        <div class="bd-row"><span>Address</span><b>{{ booking.vehicle.shop.address }}</b></div>
+        <div class="bd-row"><span>Shop Mobile</span><b>{{ booking.vehicle.shop.mobile_number }}</b></div>
+      </div>
+
+      <div class="bd-section">
+        <h3>Vehicle</h3>
+        <div class="bd-row"><span>Name</span><b>{{ booking.vehicle.name }}</b></div>
+        <div class="bd-row"><span>Type</span><b>{{ booking.vehicle.vehicle_type|default:"-" }}</b></div>
+        <div class="bd-row"><span>Pickup</span><b>{{ booking.pickup_date }}</b></div>
+        <div class="bd-row"><span>Dropoff</span><b>{{ booking.dropoff_date }}</b></div>
+      </div>
+
+      <div class="bd-section">
+        <h3>Customer</h3>
+        <div class="bd-row"><span>Name</span><b>{{ booking.user.username|default:request.user.get_full_name }}</b></div>
+        <div class="bd-row"><span>Mobile</span><b>{{ booking.customer_mobile_number|default:request.user.profile.mobile_number }}</b></div>
+        <div class="bd-row"><span>Email</span><b>{{ request.user.email }}</b></div>
+      </div>
+
+      <div class="bd-section">
+        <h3>Payment</h3>
+        <div class="bd-row"><span>Total</span><b>₹ {{ total_amount }}</b></div>
+        <div class="bd-row"><span>Razorpay Order</span><b class="bd-mono">{{ booking.razorpay_order_id|default:"-" }}</b></div>
+        <div class="bd-row"><span>Razorpay Payment</span><b class="bd-mono">{{ booking.razorpay_payment_id|default:"-" }}</b></div>
+      </div>
+    </div>
+
+    <div class="bd-actions">
+      <a class="bd-btn bd-btn--ghost" href="{% url 'vehicles:my_rentals' %}">Back</a>
+      <a class="bd-btn bd-btn--primary" href="{% url 'vehicles:cancel_rental' booking.id %}">Cancel Booking</a>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

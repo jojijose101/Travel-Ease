@@ -1,0 +1,222 @@
+/* ===== Shop Detail Page ===== */
+
+.shop-wrap{ margin-top: 12px; }
+.dot{ opacity:.55; margin: 0 6px; }
+
+.shop-card{
+  padding: 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.06);
+  min-height: auto;
+}
+
+.shop-head-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.shop-phone{
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(0,0,0,.02);
+  white-space: nowrap;
+}
+
+.shop-desc{
+  margin: 10px 0 0;
+  line-height: 1.55;
+  color: rgba(0,0,0,.82);
+}
+
+/* Filter card */
+.filter-card{
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 10px 26px rgba(0,0,0,.05);
+  min-height: auto;
+}
+
+.filter-head{ margin-bottom: 10px; }
+.filter-title{ margin: 0; font-size: 16px; font-weight: 1000; }
+
+.check-form{
+  display:grid;
+  grid-template-columns: 1fr 1fr 140px;
+  gap: 10px;
+  align-items:end;
+}
+
+.check-form label{
+  display:block;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 6px;
+  color: rgba(0,0,0,.72);
+}
+
+.check-form input{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.12);
+  background:#fff;
+  outline:none;
+}
+
+.check-form input:focus{
+  border-color: rgba(255,77,77,.55);
+  box-shadow: 0 0 0 4px rgba(255,77,77,.14);
+}
+
+/* Section head */
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0 10px;
+}
+
+.section-title{ margin: 0; }
+
+.badge-info{
+  display:inline-flex;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,77,77,.10);
+  color:#b42318;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+/* Vehicle cards (reuse from vehicles list) */
+.vehicle-card{
+  border: 1px solid rgba(0,0,0,.08);
+  padding: 12px;
+}
+
+.vehicle-card .card-img.placeholder{
+  display:grid;
+  place-items:center;
+  color: rgba(0,0,0,.55);
+  font-weight: 900;
+  background: rgba(0,0,0,.05);
+}
+
+.vehicle-card .card-body{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.vehicle-card .card-title{
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 1000;
+}
+
+.vehicle-card .card-meta{ margin:0; font-size: 13px; }
+
+.vehicle-card .card-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.avail-pill{
+  display:inline-flex;
+  align-items:center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(22,163,74,.12);
+  color: #166534;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.card-actions{
+  display:flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-mini{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.10);
+  background:#fff;
+  font-weight: 900;
+  font-size: 13px;
+  min-width: 90px;
+}
+
+.btn-mini.primary{
+  border-color: rgba(255,77,77,.22);
+  background: rgba(255,77,77,.10);
+  color:#b42318;
+}
+/* ===== Shop Logo ===== */
+.shop-left{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+}
+
+.shop-logo{
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  object-fit: cover;
+  border: 1px solid rgba(0,0,0,.10);
+  background: #fff;
+  box-shadow: 0 10px 20px rgba(0,0,0,.06);
+}
+
+.shop-logo.ph{
+  display:grid;
+  place-items:center;
+  font-weight: 1000;
+  color: rgba(0,0,0,.55);
+  background: rgba(255,77,77,.08);
+  border-color: rgba(255,77,77,.18);
+}
+
+.shop-title .page-title{
+  margin: 0;
+}
+
+
+
+@media (max-width: 980px){
+  .check-form{ grid-template-columns: 1fr 1fr; }
+  .check-form button{ grid-column: span 2; }
+}
+
+@media (max-width: 640px){
+  .check-form{ grid-template-columns: 1fr; }
+  .check-form button{ grid-column: auto; width:100%; }
+  .btn-mini{ width:100%; }
+   .shop-logo{
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+  }
+}

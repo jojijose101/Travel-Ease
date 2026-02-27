@@ -1,0 +1,28 @@
+{% extends 'partners/base_partner.html' %}
+{% block title %}Manage Rental Shops{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row-between">
+    <h2>Manage Rental Shops</h2>
+    <a class="btn" href="{% url 'vehicles:rental_partner_shop_add' %}">+ Add Shop</a>
+  </div>
+
+  <div class="tablewrap">
+    <table class="table">
+      <thead><tr><th>Name</th><th>City</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for s in shops %}
+        <tr>
+          <td>{{ s.name }}</td>
+          <td>{{ s.city }}</td>
+          <td>{% if s.is_active %}Active{% else %}Inactive{% endif %}</td>
+          <td><a class="btn btn-outline" href="{% url 'vehicles:rental_partner_shop_edit' s.id %}">Edit</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No shops yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

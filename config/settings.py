@@ -17,8 +17,8 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-RAZORPAY_KEY_ID = "rzp_test_SEnS9BbxofUlXo"
-RAZORPAY_KEY_SECRET = "2NAEZMzjT1pGIxQN8T5AhehW"
+RAZORPAY_KEY_ID = "rzp_test_SLGtQYvzz97uZJ"
+RAZORPAY_KEY_SECRET = "pPLaRRJW6ZcoqaANSyDZ4RVG"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'booking',
     'vehicles',
+    'Hotels',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'accounts.context_processors.user_role',
             ],
         },
     },

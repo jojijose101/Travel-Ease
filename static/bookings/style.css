@@ -695,3 +695,14 @@ body {
 @media (max-width: 720px){
   .section-tabs{ display:none; }
 }
+
+
+/* ---------- Partner/Admin helpers ---------- */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+@media(max-width:820px){.grid2{grid-template-columns:1fr;}}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.tablewrap{overflow:auto;background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;}
+.table{width:100%;border-collapse:collapse;min-width:720px;}
+.table th,.table td{padding:12px 12px;border-bottom:1px solid rgba(0,0,0,.06);text-align:left;vertical-align:top;}
+.table thead th{background:#fafbff;font-weight:700;}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;background:rgba(0,0,0,.06);font-size:12px;}

@@ -1,38 +1,112 @@
-{% load bookings_extras %}
 {% extends "bookings/base.html" %}
-{% block title %}{{ shop.name }}{% endblock %}
+{% load static %}
+{% load bookings_extras %}
 
+{% block title %}{{ shop.name }}{% endblock %}
+{% block extra_css %} <link rel="stylesheet" href="{% static 'vehicles/shop.css' %}"> {% endblock %}
 {% block content %}
 <a class="back" href="{% url 'vehicles:vehicle_list' %}">← Back to Vehicles</a>
 
-<h1 class="page-title">{{ shop.name }}</h1>
-<p class="muted">{{ shop.city }}{% if shop.address %} · {{ shop.address }}{% endif %}</p>
-{% if shop.description %}<p>{{ shop.description }}</p>{% endif %}
+<div class="shop-wrap">
 
-<form class="searchbar" method="get">
-  <input type="date" name="pickup" value="{{ pickup }}" required>
-  <input type="date" name="dropoff" value="{{ dropoff }}" required>
-  <button type="submit">Check availability</button>
-</form>
+  <div class="shop-head card shop-card">
+  <div class="shop-head-top">
+    <div class="shop-left">
+      {% if shop.logo %}
+        <img src="{{ shop.logo.url }}" class="shop-logo" alt="{{ shop.name }} logo">
+      {% else %}
+        <div class="shop-logo ph" aria-hidden="true">TE</div>
+      {% endif %}
 
-<div class="grid">
-  {% for v in vehicles %}
-  <div class="card">
-    {% if v.image %}
-    <img src="{{ v.image.url }}" class="card-img" alt="{{ v.name }}">
+      <div class="shop-title">
+        <h1 class="page-title">{{ shop.name }}</h1>
+        <p class="muted">
+          {{ shop.city }}{% if shop.address %} <span class="dot">·</span> {{ shop.address }}{% endif %}
+        </p>
+      </div>
+    </div>
+
+    {% if shop.mobile_number %}
+      <div class="shop-phone">
+        <span class="muted">Phone</span>
+        <b>{{ shop.mobile_number }}</b>
+      </div>
     {% endif %}
-    <h3><a href="{% url 'vehicles:vehicle_detail' v.id %}">{{ v.name }}</a></h3>
-    <p class="muted">{{ v.get_vehicle_type_display }} · {{ v.seats }} seats · {{ v.get_transmission_display }}{% if v.fuel %} · {{ v.fuel }}{% endif %}</p>
-    <p class="price">₹ {{ v.price_per_day }} / day</p>
-
-    {% if pickup and dropoff %}
-      <p class="muted">Available: <strong>{{ availability|get_item:v.id|default:"-" }}</strong></p>
-    {% endif %}
-
-    <a class="btn" href="{% url 'vehicles:book_vehicle' v.id %}?pickup={{ pickup }}&dropoff={{ dropoff }}">Book</a>
   </div>
-  {% empty %}
-  <p>No vehicles available.</p>
-  {% endfor %}
+
+  {% if shop.description %}
+    <p class="shop-desc">{{ shop.description }}</p>
+  {% endif %}
+</div>
+
+  <div class="card filter-card">
+    <div class="filter-head">
+      <h3 class="filter-title">Check availability</h3>
+      <p class="muted small">Select dates to see available units per vehicle.</p>
+    </div>
+
+    <form class="check-form" method="get">
+      <div class="field">
+        <label>Pickup</label>
+        <input type="date" name="pickup" value="{{ pickup }}" required>
+      </div>
+
+      <div class="field">
+        <label>Dropoff</label>
+        <input type="date" name="dropoff" value="{{ dropoff }}" required>
+      </div>
+
+      <button class="btn btn-primary veh-pay" type="submit">Check</button>
+    </form>
+  </div>
+
+  <div class="section-head">
+    <h2 class="section-title">Vehicles</h2>
+    {% if pickup and dropoff %}
+      <span class="badge-info">Showing availability for selected dates</span>
+    {% endif %}
+  </div>
+
+  <div class="grid vehicles-grid">
+    {% for v in vehicles %}
+      <a class="card vehicle-card" href="{% url 'vehicles:vehicle_detail' v.id %}">
+        {% if v.image %}
+          <img src="{{ v.image.url }}" class="card-img" alt="{{ v.name }}">
+        {% else %}
+          <div class="card-img placeholder">No Image</div>
+        {% endif %}
+
+        <div class="card-body">
+          <h3 class="card-title">{{ v.name }}</h3>
+
+          <p class="muted card-meta">
+            {{ v.get_vehicle_type_display }} · {{ v.seats }} seats · {{ v.get_transmission_display }}
+            {% if v.fuel %} · {{ v.fuel }}{% endif %}
+          </p>
+
+          <div class="card-bottom">
+            <p class="price">₹ {{ v.price_per_day }} <span class="muted small">/ day</span></p>
+
+            {% if pickup and dropoff %}
+              <span class="avail-pill">
+                Available: <b>{{ availability|get_item:v.id|default:"-" }}</b>
+              </span>
+            {% endif %}
+          </div>
+
+          <div class="card-actions">
+            <span class="btn-mini">View</span>
+            <span class="btn-mini primary">Book</span>
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <div class="empty-state card">
+        <h3>No vehicles available</h3>
+        <p class="muted">Try changing your dates or come back later.</p>
+      </div>
+    {% endfor %}
+  </div>
+
 </div>
 {% endblock %}

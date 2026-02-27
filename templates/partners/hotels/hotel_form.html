@@ -1,0 +1,31 @@
+{% extends 'partners/base_partner.html' %}
+{% load static %}
+{% block title %}{% if mode == 'add' %}Add Hotel{% else %}Edit Hotel{% endif %}{% endblock %}
+{% block extra_css %} <link rel="stylesheet" href="{% static 'css/form.css' %}"> {% endblock %}
+{% block content %}
+<div class="container">
+
+  <div class="form-head">
+    <div>
+      <h2 class="page-title">{% if mode == 'add' %}Add Hotel{% else %}Edit Hotel{% endif %}</h2>
+      <p class="muted">Add hotel details like name, city, address, and images.</p>
+    </div>
+  </div>
+
+  <div class="card panel form-card">
+    <form method="post" enctype="multipart/form-data" class="form partner-form">
+      {% csrf_token %}
+
+      <div class="form-fields">
+        {{ form.as_p }}
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">Save</button>
+        <a class="btn btn-outline" href="{% url 'Hotels:hotel_partner_hotels' %}">Back</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

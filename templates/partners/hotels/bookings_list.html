@@ -1,0 +1,80 @@
+{% extends 'partners/base_partner.html' %}
+{% load static %}
+{% block title %}Hotel Bookings{% endblock %}
+{% block extra_css %} <link rel="stylesheet" href="{% static 'css/booking_list.css' %}"> {% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div>
+      <h2 class="page-title">Hotel Bookings</h2>
+      <p class="muted">Manage all bookings for your hotels. Tap a booking to view full details.</p>
+    </div>
+  </div>
+
+  <div class="card panel">
+    <div class="tablewrap booking-table">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Guest</th>
+            <th>Mobile</th>
+            <th>Hotel</th>
+            <th>Room</th>
+            <th>Dates</th>
+            <th>Rooms</th>
+            <th>Status</th>
+            <th>Paid</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for b in bookings %}
+          <tr onclick="window.location='{% url 'Hotels:partner_hotel_booking_detail' b.id %}'" class="row-click">
+            <td data-label="Guest">{{ b.user.username }}</td>
+
+            <td data-label="Mobile">
+              {{ b.mobile_number|default:b.user.profile.mobile_number|default:"-" }}
+            </td>
+
+            <td data-label="Hotel">{{ b.room.hotel.name }}</td>
+            <td data-label="Room">{{ b.room.name }}</td>
+
+            <td data-label="Dates">
+              <span class="date-range">
+                {{ b.check_in }} <span class="arrow">→</span> {{ b.check_out }}
+              </span>
+            </td>
+
+            <td data-label="Rooms">{{ b.rooms_count }}</td>
+
+            <td data-label="Status">
+              <span class="status-pill {% if b.status %}st-{{ b.status|lower }}{% endif %}">
+                {{ b.status }}
+              </span>
+            </td>
+
+            <td data-label="Paid">
+              {% if b.is_paid %}
+                <span class="paid-pill yes">Yes</span>
+              {% else %}
+                <span class="paid-pill no">No</span>
+              {% endif %}
+            </td>
+
+            <td class="actions" data-label="Action" onclick="event.stopPropagation();">
+              <a class="btn-view" href="{% url 'Hotels:partner_hotel_booking_detail' b.id %}">View</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="9" class="empty">No bookings found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends 'partners/base_partner.html' %}
+{% load static %}
+{% block title %}{% if mode == 'add' %}Add Rental Shop{% else %}Edit Rental Shop{% endif %}{% endblock %}
+{%  block extra_css %} <link rel="stylesheet" href="{% static 'css/form.css' %}"> {% endblock %}
+{% block content %}
+<div class="container">
+
+  <div class="form-head">
+    <div>
+      <h2 class="page-title">{% if mode == 'add' %}Add Rental Shop{% else %}Edit Rental Shop{% endif %}</h2>
+      <p class="muted">Fill the details below. Image/logo is optional (if your form has it).</p>
+    </div>
+  </div>
+
+  <div class="card panel form-card veh-card">
+    <form method="post" enctype="multipart/form-data" class="form partner-form">
+      {% csrf_token %}
+
+      <div class="form-fields">
+        {{ form.as_p }}
+      </div>
+
+      <div class="form-actions">
+        <button class="btn veh-primary" type="submit">Save</button>
+        <a class="btn btn-outline veh-outline" href="{% url 'vehicles:rental_partner_shops' %}">Back</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

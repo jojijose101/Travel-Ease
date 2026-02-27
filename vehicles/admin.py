@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import RentalShop, Vehicle, VehicleBooking
+from .models import RentalShop, Vehicle
 
 
 @admin.register(RentalShop)
@@ -19,8 +19,3 @@ class VehicleAdmin(admin.ModelAdmin):
         return obj.shop.city
 
 
-@admin.register(VehicleBooking)
-class VehicleBookingAdmin(admin.ModelAdmin):
-    list_display = ('user', 'vehicle', 'pickup_date', 'dropoff_date', 'units_count', 'status', 'is_paid')
-    list_filter = ('status', 'is_paid', 'pickup_date')
-    search_fields = ('user__username', 'vehicle__name', 'vehicle__shop__name')

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Partner Portal · TravelEase{% endblock %}</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'bookings/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'vehicles/style.css' %}" />
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body class="partner-theme">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="{% if user_role == 'hotel_partner' %}{% url 'Hotels:hotel_partner_dashboard' %}{% else %}{% url 'vehicles:rental_partner_dashboard' %}{% endif %}">
+        TravelEase <span class="brand-dot" aria-hidden="true">•</span>
+        <span class="brand-sub">Partner Portal</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="mainNav" id="navToggleBtn">
+        ☰
+      </button>
+
+      <nav class="nav" id="mainNav">
+        {% if user_role == 'hotel_partner' %}
+          <a href="{% url 'Hotels:hotel_partner_dashboard' %}">Dashboard</a>
+          <a href="{% url 'Hotels:hotel_partner_hotels' %}">Hotels</a>
+          <a href="{% url 'Hotels:hotel_partner_rooms' %}">Rooms</a>
+          <a href="{% url 'Hotels:hotel_partner_bookings' %}">Bookings</a>
+        {% elif user_role == 'rental_partner' %}
+          <a href="{% url 'vehicles:rental_partner_dashboard' %}">Dashboard</a>
+          <a href="{% url 'vehicles:rental_partner_shops' %}">Shops</a>
+          <a href="{% url 'vehicles:rental_partner_vehicles' %}">Vehicles</a>
+          <a href="{% url 'vehicles:rental_partner_bookings' %}">Bookings</a>
+        {% endif %}
+
+        <a href="{% url 'booking:hotel_list' %}">Customer Site</a>
+        <span class="chip">Hi, {{ user.username }}</span>
+        <a href="{% url 'booking:logout' %}">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <script>
+    (function () {
+      const nav = document.getElementById("mainNav");
+      const btn = document.getElementById("navToggleBtn");
+      if (!nav || !btn) return;
+      btn.addEventListener("click", function () {
+        nav.classList.toggle("open");
+        const isOpen = nav.classList.contains("open");
+        btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+      document.addEventListener("click", function (e) {
+        if (window.innerWidth > 720) return;
+        if (nav.contains(e.target) || btn.contains(e.target)) return;
+        nav.classList.remove("open");
+        btn.setAttribute("aria-expanded", "false");
+      });
+    })();
+  </script>
+
+  <main class="container">{% block content %}{% endblock %}</main>
+
+  <footer class="footer">
+    <div class="container">© {{ now|date:"Y" }} TravelEase</div>
+  </footer>
+</body>
+</html>

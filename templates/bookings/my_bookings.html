@@ -6,16 +6,21 @@
 
   <div class="grid">
     {% for b in bookings %}
+   
       <div class="card">
         <h3>{{ b.room.hotel.name }} • {{ b.room.name }}</h3>
         <p class="muted">{{ b.check_in }} → {{ b.check_out }}</p>
+        {% if b.room.hotel.mobile_number %}
+          <p class="muted">Hotel phone: <b>{{ b.room.hotel.mobile_number }}</b></p>
+        {% endif %}
         <p class="muted">Rooms: {{ b.rooms_count }}</p>
         <p class="muted">Status: <b>{{ b.status }}</b></p>
 
         {% if b.status == "confirmed" %}
-          <a class="btn-link" href="{% url 'booking:cancel_booking' b.id %}">Cancel</a>
+          <a class="btn-link" href="{% url 'booking:customer_booking_detail' b.id %}">View Details</a>
         {% endif %}
       </div>
+  
     {% empty %}
       <p>No bookings yet.</p>
     {% endfor %}

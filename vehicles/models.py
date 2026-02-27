@@ -11,6 +11,7 @@ class RentalShop(models.Model):
     city = models.CharField(max_length=120)
     address = models.TextField(blank=True)
     description = models.TextField(blank=True)
+    mobile_number = models.CharField(max_length=15, blank=True, null=True)
 
     logo = models.ImageField(upload_to='rental_shops/', blank=True, null=True)
 
@@ -70,37 +71,3 @@ class Vehicle(models.Model):
         return f"{self.shop.name} - {self.name}"
 
 
-class VehicleBooking(models.Model):
-    STATUS_CHOICES = (
-        ('confirmed', 'Confirmed'),
-        ('cancelled', 'Cancelled'),
-    )
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='bookings')
-
-    pickup_date = models.DateField()
-    dropoff_date = models.DateField()
-
-    pickup_location = models.CharField(max_length=200, blank=True)
-    dropoff_location = models.CharField(max_length=200, blank=True)
-
-    units_count = models.PositiveIntegerField(default=1)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='confirmed')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    # Razorpay fields (same pattern as hotel booking)
-    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
-    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
-    razorpay_signature = models.CharField(max_length=255, blank=True, null=True)
-    is_paid = models.BooleanField(default=False)
-    amount_paise = models.PositiveIntegerField(default=0)
-
-    def clean(self):
-        if self.pickup_date >= self.dropoff_date:
-            raise ValidationError('Drop-off must be after pickup.')
-        if self.pickup_date < timezone.now().date():
-            raise ValidationError('Pickup cannot be in the past.')
-
-    def __str__(self):
-        return f"{self.user} - {self.vehicle.name} ({self.pickup_date} to {self.dropoff_date})"

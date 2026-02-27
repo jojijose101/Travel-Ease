@@ -1,10 +1,11 @@
 {% extends "bookings/base.html" %}
+{% load static %}
 {% block title %}Book Vehicle{% endblock %}
-
+{% block extra_css %} <link rel="stylesheet" href="{% static 'vehicles/booking.css' %}"> {% endblock %}
 {% block content %}
 <a class="back" href="{% url 'vehicles:vehicle_detail' vehicle.id %}">← Back</a>
 
-<section class="book-wrap">
+<section class="book-wrap vehicle-book">
 
   <!-- LEFT: Vehicle Preview -->
   <div class="card book-left">
@@ -16,20 +17,20 @@
       {% endif %}
     </div>
 
-    <h2 class="room-title">{{ shop.name }} • {{ vehicle.name }}</h2>
+    <h2 class="room-title">{{ shop.name }} <span class="dot">•</span> {{ vehicle.name }}</h2>
     <p class="muted">
       {{ shop.city }}
-      {% if shop.address %} • {{ shop.address }}{% endif %}
+      {% if shop.address %} <span class="dot">•</span> {{ shop.address }}{% endif %}
     </p>
 
     <div class="info-row">
       <div class="info-pill">Type: <b>{{ vehicle.get_vehicle_type_display }}</b></div>
       <div class="info-pill">Seats: <b>{{ vehicle.seats }}</b></div>
-      <div class="info-pill price-pill">₹ {{ vehicle.price_per_day }} / day</div>
+      <div class="info-pill price-pill">₹ {{ vehicle.price_per_day }} <span class="muted small">/ day</span></div>
     </div>
 
     {% if preview_available is not None %}
-      <div class="alert alert-info" style="margin-top:12px;">
+      <div class="alert alert-info">
         Availability for selected dates: <b>{{ preview_available }}</b>
       </div>
     {% endif %}
@@ -37,8 +38,8 @@
 
   <!-- RIGHT: Booking Form -->
   <div class="card book-right">
-    <h1 class="page-title" style="margin-top:0;">Confirm your rental</h1>
-    <p class="muted">Enter pickup/drop dates and number of vehicles.</p>
+    <h1 class="page-title no-top">Confirm your rental</h1>
+    <p class="muted">Enter pickup/drop dates, units, locations, and mobile number.</p>
 
     {% if errors %}
       <div class="alert alert-error">
@@ -62,20 +63,26 @@
           {% if errors.dropoff_date %}<div class="field-error">{{ errors.dropoff_date }}</div>{% endif %}
         </div>
 
-        <div class="form-row" style="grid-column: 1 / -1;">
+        <div class="form-row span-2">
           <label for="units_count">Vehicles (units)</label>
           <input type="number" id="units_count" name="units_count" min="1" value="{{ values.units_count }}" required>
           {% if errors.units_count %}<div class="field-error">{{ errors.units_count }}</div>{% endif %}
         </div>
 
-        <div class="form-row" style="grid-column: 1 / -1;">
+        <div class="form-row span-2">
           <label for="pickup_location">Pickup location</label>
           <input type="text" id="pickup_location" name="pickup_location" value="{{ values.pickup_location }}">
         </div>
 
-        <div class="form-row" style="grid-column: 1 / -1;">
+        <div class="form-row span-2">
           <label for="dropoff_location">Drop-off location</label>
           <input type="text" id="dropoff_location" name="dropoff_location" value="{{ values.dropoff_location }}">
+        </div>
+
+        <div class="form-row span-2">
+          <label for="mobile_number">Mobile number</label>
+          <input type="tel" id="mobile_number" name="mobile_number" placeholder="+919876543210" value="{{ values.mobile_number }}">
+          {% if errors.mobile_number %}<div class="field-error">{{ errors.mobile_number }}</div>{% endif %}
         </div>
       </div>
 
@@ -83,12 +90,13 @@
         <div class="summary-row"><span>Price per day</span><b>₹ <span id="pricePerDay">{{ vehicle.price_per_day }}</span></b></div>
         <div class="summary-row"><span>Days</span><b><span id="daysCount">0</span></b></div>
         <div class="summary-row"><span>Units</span><b><span id="unitsCountPreview">{{ values.units_count|default:"1" }}</span></b></div>
-        <hr style="border:none;border-top:1px solid #eee;margin:10px 0;">
-        <div class="summary-row"><span>Estimated total</span><b>₹ <span id="totalPrice">0</span></b></div>
-        <p class="muted small" style="margin:8px 0 0;">(Estimate. Final total = days × units × price.)</p>
+        <hr class="summary-hr">
+        <div class="summary-row total"><span>Estimated total</span><b>₹ <span id="totalPrice">0</span></b></div>
+        <p class="muted small note">(Estimate. Final total = days × units × price.)</p>
       </div>
 
-      <button type="submit" class="btn-primary">Proceed to Pay</button>
+      <button type="submit" class="btn-primary veh-pay">Proceed to Pay</button>
+      <p class="muted tiny">By continuing, you agree to the rental terms.</p>
     </form>
   </div>
 </section>

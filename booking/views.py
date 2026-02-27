@@ -3,8 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from accounts.utils import get_role, role_required
 from datetime import date
-from .models import Hotel, Room, Booking
+from django.db.models import Sum
+
+
+from Hotels.models import Hotel, Room
+from .models import Booking
 from django.utils.dateparse import parse_date
 import razorpay
 import hmac
@@ -12,6 +17,7 @@ import hashlib
 from django.conf import settings
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from .models import VehicleBooking
 
 
 
@@ -19,7 +25,7 @@ def hotel_list(request):
     q = (request.GET.get("q") or "").strip()
     city = (request.GET.get("city") or "").strip()
 
-    hotels = Hotel.objects.all().order_by("name")
+    hotels = Hotel.objects.filter(is_active=True).order_by("name")
 
     if q:
         hotels = hotels.filter(name__icontains=q)
@@ -76,12 +82,14 @@ def book_room(request, room_id):
             "check_in": (request.POST.get("check_in") or "").strip(),
             "check_out": (request.POST.get("check_out") or "").strip(),
             "rooms_count": (request.POST.get("rooms_count") or "1").strip(),
+            "mobile_number": (request.POST.get("mobile_number") or "").strip(),
         }
     else:
         values = {
             "check_in": check_in_q,
             "check_out": check_out_q,
             "rooms_count": "1",
+            "mobile_number": getattr(getattr(request.user, 'profile', None), 'mobile_number', '') if request.user.is_authenticated else "",
         }
 
     if request.method == "POST":
@@ -89,6 +97,7 @@ def book_room(request, room_id):
         check_in_raw = values["check_in"]
         check_out_raw = values["check_out"]
         rooms_count_raw = values["rooms_count"]
+        mobile_raw = values.get("mobile_number", "")
 
         # 2) Validate & convert
         check_in = None
@@ -119,6 +128,11 @@ def book_room(request, room_id):
             rooms_count = None
 
         # 3) Date rules
+        # 3.5) Mobile number (optional but recommended)
+        if mobile_raw:
+            digits = mobile_raw.replace("+", "")
+            if not digits.isdigit() or not (10 <= len(digits) <= 15):
+                errors["mobile_number"] = "Enter a valid mobile number (10–15 digits)."
         today = date.today()
         if check_in and check_out:
             if check_in >= check_out:
@@ -139,6 +153,7 @@ def book_room(request, room_id):
                 booking = Booking.objects.create(
                     user=request.user,
                     room=room,
+                    mobile_number=mobile_raw or None,
                     check_in=check_in,
                     check_out=check_out,
                     rooms_count=rooms_count,
@@ -146,6 +161,14 @@ def book_room(request, room_id):
                     is_paid=False,
                     amount_paise=amount,
                     )
+
+                # If user profile mobile is empty, store it (nice UX)
+                try:
+                    if mobile_raw and hasattr(request.user, 'profile') and not request.user.profile.mobile_number:
+                        request.user.profile.mobile_number = mobile_raw
+                        request.user.profile.save(update_fields=['mobile_number'])
+                except Exception:
+                    pass
 # create booking first (pending payment)
 
 
@@ -222,8 +245,27 @@ def my_bookings(request):
         .select_related("room", "room__hotel")
         .order_by("-created_at")
     )
+    
     return render(request, "bookings/my_bookings.html", {"bookings": bookings})
 
+@login_required
+def customer_rental_detail(request, booking_id):
+    """
+    Customer sees ONLY their own rental booking details.
+    """
+    booking = get_object_or_404(VehicleBooking, id=booking_id, user=request.user)
+    total_amount = booking.amount_paise / 100  # Convert paise to rupees
+    return render(request, "vehicles/customer_rental_detail.html", {"booking": booking, "total_amount": total_amount})
+
+@login_required
+def customer_booking_detail(request, booking_id):
+    """
+    Customer sees ONLY their own hotel booking details.
+    """
+
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    total_amount = booking.amount_paise / 100  # Convert paise to rupees
+    return render(request, "bookings/customer_booking_detail.html", {"booking": booking, "total_amount": total_amount})
 
 @login_required
 def cancel_booking(request, booking_id):
@@ -240,6 +282,9 @@ def cancel_booking(request, booking_id):
         return redirect("booking:my_bookings")
 
     return render(request, "bookings/cancel_booking.html", {"booking": booking})
+
+
+
 
 
 def signup_view(request):
@@ -304,8 +349,15 @@ def login_view(request):
             else:
                 login(request, user)
                 messages.success(request, "✅ Logged in successfully!")
-                next_url = request.GET.get("next")
-                return redirect(next_url or "booking:hotel_list")
+                next_url = request.GET.get('next')
+                role = get_role(user)
+                if next_url:
+                    return redirect(next_url)
+                if role == 'hotel_partner':
+                    return redirect('Hotels:hotel_partner_dashboard')
+                if role == 'rental_partner':
+                    return redirect('vehicles:rental_partner_dashboard')
+                return redirect('booking:hotel_list')
 
     return render(request, "bookings/login.html", {"errors": errors, "values": values})
 

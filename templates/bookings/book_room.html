@@ -97,6 +97,21 @@
             <div class="field-error">{{ errors.rooms_count }}</div>
           {% endif %}
         </div>
+
+        <!-- Mobile number -->
+        <div class="form-row" style="grid-column: 1 / -1;">
+          <label for="mobile_number">Mobile number</label>
+          <input
+            type="tel"
+            id="mobile_number"
+            name="mobile_number"
+            placeholder="+919876543210"
+            value="{{ values.mobile_number }}"
+          >
+          {% if errors.mobile_number %}
+            <div class="field-error">{{ errors.mobile_number }}</div>
+          {% endif %}
+        </div>
       </div>
 
       <!-- Summary -->

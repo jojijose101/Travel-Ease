@@ -1,0 +1,64 @@
+{% extends "partners/base_partner.html" %}
+{% load static %}
+{% block title %}Hotel Booking Details{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="bd-wrap">
+  <div class="bd-card bd-card--partner">
+    <div class="bd-head">
+      <div>
+        <h2 class="bd-title">Hotel Booking Details</h2>
+        <p class="bd-sub">Booking ID: <span class="bd-pill">#{{ booking.id }}</span></p>
+      </div>
+      <div class="bd-status">
+        <span class="bd-badge bd-badge--{{ booking.status|default:'placed' }}">{{ booking.status|default:"Placed" }}</span>
+        {% if booking.is_paid %}
+          <span class="bd-badge bd-badge--paid">Paid</span>
+        {% else %}
+          <span class="bd-badge bd-badge--unpaid">Unpaid</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="bd-grid">
+      <div class="bd-section">
+        <h3>Hotel</h3>
+        <div class="bd-row"><span>Name</span><b>{{ hotel.name }}</b></div>
+        <div class="bd-row"><span>Hotel Mobile</span><b>{{ hotel.mobile_number }}</b></div>
+      </div>
+
+      <div class="bd-section">
+        <h3>Stay</h3>
+        <div class="bd-row"><span>Room</span><b>{{ booking.room.name }}</b></div>
+        <div class="bd-row"><span>Check-in</span><b>{{ booking.check_in }}</b></div>
+        <div class="bd-row"><span>Check-out</span><b>{{ booking.check_out }}</b></div>
+        <div class="bd-row"><span>Capacity</span><b>{{ booking.room.capacity }}</b></div>
+        <div class="bd-row"><span>Total Rooms</span><b>{{ booking.rooms_count }}</b></div>
+      </div>
+
+      <div class="bd-section">
+        <h3>Customer</h3>
+        <div class="bd-row"><span>User</span><b>{{ booking.user.username }}</b></div>
+        <div class="bd-row"><span>Name</span><b>{{ booking.user.username|default:booking.user.get_full_name }}</b></div>
+        <div class="bd-row"><span>Customer Mobile</span><b>{{ booking.mobile_number }}</b></div>
+        <div class="bd-row"><span>Email</span><b>{{ booking.user.email }}</b></div>
+      </div>
+
+      <div class="bd-section">
+        <h3>Payment</h3>
+        <div class="bd-row"><span>Total</span><b>₹ {{ booking.total_amount }}</b></div>
+        <div class="bd-row"><span>Razorpay Order</span><b class="bd-mono">{{ booking.razorpay_order_id|default:"-" }}</b></div>
+        <div class="bd-row"><span>Razorpay Payment</span><b class="bd-mono">{{ booking.razorpay_payment_id|default:"-" }}</b></div>
+      </div>
+    </div>
+
+    <div class="bd-actions">
+      <a class="bd-btn bd-btn--ghost" href="{% url 'Hotels:partner_hotel_booking_detail' booking.id %}">Back</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

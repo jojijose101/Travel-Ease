@@ -1,0 +1,182 @@
+/* ===== Vehicle Detail Page ===== */
+
+.vehicle-detail{
+  margin-top: 12px;
+}
+
+.detail-card{
+  display:grid;
+  grid-template-columns: 440px 1fr;
+  gap: 16px;
+  background:#fff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 18px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.06);
+  overflow:hidden;
+}
+
+.detail-media{
+  background: rgba(0,0,0,.03);
+}
+
+.detail-img{
+  width:100%;
+  height: 100%;
+  min-height: 320px;
+  object-fit: cover;
+  display:block;
+}
+
+.detail-placeholder{
+  min-height: 320px;
+  display:grid;
+  place-items:center;
+  font-weight: 900;
+  color: rgba(0,0,0,.55);
+}
+
+.detail-body{
+  padding: 16px;
+}
+
+.detail-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.price-badge{
+  display:inline-flex;
+  align-items:baseline;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255,77,77,.10);
+  color: #b42318;
+  font-weight: 1000;
+  white-space: nowrap;
+}
+.price-badge span{
+  font-weight: 800;
+  font-size: 12px;
+  color: rgba(0,0,0,.55);
+}
+
+.detail-meta{
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.shop-line{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(0,0,0,.02);
+  display:flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items:center;
+}
+
+.shop-link{
+  font-weight: 900;
+  color: #111;
+  text-decoration: none;
+}
+.shop-link:hover{ text-decoration: underline; }
+
+.shop-phone{
+  font-weight: 900;
+  color: #111;
+}
+
+/* Availability card */
+.check-card{
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,.08);
+  background: rgba(0,0,0,.02);
+}
+
+.check-title{
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: 1000;
+}
+
+.check-form{
+  display:grid;
+  grid-template-columns: 1fr 1fr 140px;
+  gap: 10px;
+  align-items:end;
+}
+
+.check-form label{
+  display:block;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 6px;
+  color: rgba(0,0,0,.72);
+}
+
+.check-form input{
+  width:100%;
+  padding: 12px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.12);
+  background:#fff;
+  outline:none;
+}
+
+.check-form input:focus{
+  border-color: rgba(255,77,77,.55);
+  box-shadow: 0 0 0 4px rgba(255,77,77,.14);
+}
+
+/* Availability result */
+.availability{
+  margin-top: 10px;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+.avail-count{
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(22,163,74,.12);
+  color:#166534;
+}
+
+/* Book button */
+.book-btn{
+  margin-top: 12px;
+  width: fit-content;
+}
+
+/* Responsive */
+@media (max-width: 980px){
+  .detail-card{
+    grid-template-columns: 1fr;
+  }
+  .detail-img,
+  .detail-placeholder{
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 640px){
+  .check-form{
+    grid-template-columns: 1fr;
+  }
+  .check-form .btn{
+    width: 100%;
+  }
+  .book-btn{
+    width: 100%;
+    text-align:center;
+  }
+}

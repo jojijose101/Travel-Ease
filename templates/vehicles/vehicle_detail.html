@@ -1,33 +1,73 @@
 {% extends "bookings/base.html" %}
+{% load static %}
 {% block title %}{{ vehicle.name }}{% endblock %}
-
+{% block extra_css %}
+ <link rel="stylesheet" href="{% static 'vehicles/details.css' %}"> {% endblock %}
 {% block content %}
 <a class="back" href="{% url 'vehicles:vehicle_list' %}">← Back to Vehicles</a>
 
-<div class="detail">
-  <div class="detail-media">
-    {% if vehicle.image %}
-      <img src="{{ vehicle.image.url }}" class="detail-img" alt="{{ vehicle.name }}">
-    {% endif %}
-  </div>
-  <div class="detail-body">
-    <h1 class="page-title">{{ vehicle.name }}</h1>
-    <p class="muted">{{ vehicle.get_vehicle_type_display }} · {{ vehicle.seats }} seats · {{ vehicle.get_transmission_display }}{% if vehicle.fuel %} · {{ vehicle.fuel }}{% endif %}</p>
-    <p class="muted">Shop: <a href="{% url 'vehicles:shop_detail' vehicle.shop.id %}">{{ vehicle.shop.name }}</a> · {{ vehicle.shop.city }}</p>
+<div class="vehicle-detail">
+  <div class="detail-card">
+    <div class="detail-media">
+      {% if vehicle.image %}
+        <img src="{{ vehicle.image.url }}" class="detail-img" alt="{{ vehicle.name }}">
+      {% else %}
+        <div class="detail-placeholder">No Image</div>
+      {% endif %}
+    </div>
 
-    <p class="price">₹ {{ vehicle.price_per_day }} / day</p>
+    <div class="detail-body">
+      <div class="detail-head">
+        <h1 class="page-title">{{ vehicle.name }}</h1>
+        <div class="price-badge">₹ {{ vehicle.price_per_day }} <span>/ day</span></div>
+      </div>
 
-    <form class="searchbar" method="get">
-      <input type="date" name="pickup" value="{{ pickup }}" required>
-      <input type="date" name="dropoff" value="{{ dropoff }}" required>
-      <button type="submit">Check</button>
-    </form>
+      <p class="muted detail-meta">
+        {{ vehicle.get_vehicle_type_display }}
+        · {{ vehicle.seats }} seats
+        · {{ vehicle.get_transmission_display }}
+        {% if vehicle.fuel %} · {{ vehicle.fuel }}{% endif %}
+      </p>
 
-    {% if available is not None %}
-      <p class="muted">Available units for selected dates: <strong>{{ available }}</strong></p>
-    {% endif %}
+      <div class="shop-line">
+        <span class="muted">Shop:</span>
+        <a class="shop-link" href="{% url 'vehicles:shop_detail' vehicle.shop.id %}">{{ vehicle.shop.name }}</a>
+        <span class="muted">· {{ vehicle.shop.city }}</span>
+        {% if vehicle.shop.mobile_number %}
+          <span class="shop-phone">· {{ vehicle.shop.mobile_number }}</span>
+        {% endif %}
+      </div>
 
-    <a class="btn" href="{% url 'vehicles:book_vehicle' vehicle.id %}?pickup={{ pickup }}&dropoff={{ dropoff }}">Book this vehicle</a>
+      <div class="check-card">
+        <h3 class="check-title">Check availability</h3>
+
+        <form class="check-form" method="get">
+          <div class="field">
+            <label>Pickup</label>
+            <input type="date" name="pickup" value="{{ pickup }}" required>
+          </div>
+
+          <div class="field">
+            <label>Dropoff</label>
+            <input type="date" name="dropoff" value="{{ dropoff }}" required>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Check</button>
+        </form>
+
+        {% if available is not None %}
+          <div class="availability">
+            <span class="muted">Available units:</span>
+            <strong class="avail-count">{{ available }}</strong>
+          </div>
+        {% endif %}
+      </div>
+
+      <a class="btn btn-primary book-btn"
+         href="{% url 'vehicles:book_vehicle' vehicle.id %}?pickup={{ pickup }}&dropoff={{ dropoff }}">
+         Book this vehicle
+      </a>
+    </div>
   </div>
 </div>
 {% endblock %}

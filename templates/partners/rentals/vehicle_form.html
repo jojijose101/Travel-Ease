@@ -1,0 +1,52 @@
+{% extends 'partners/base_partner.html' %}\
+{% load static %}
+{% block title %}{% if mode == 'add' %}Add Vehicle{% else %}Edit Vehicle{% endif %}{% endblock %}
+{%  block extra_css %} <link rel="stylesheet" href="{% static 'css/form.css' %}"> {% endblock %}
+{% block content %}
+<style>
+
+  /* ===== Vehicle Form small enhancements (optional) ===== */
+
+/* make number fields look nicer */
+.form-fields input[type="number"]{
+  appearance: textfield;
+}
+
+/* file upload style tweak */
+.form-fields input[type="file"]{
+  padding: 10px 12px;
+  background: rgba(255,77,77,.03);
+  border-color: rgba(255,77,77,.18);
+}
+
+/* select highlight */
+.form-fields select{
+  background: #fff;
+}
+</style>
+<div class="container">
+
+  <div class="form-head">
+    <div>
+      <h2 class="page-title">{% if mode == 'add' %}Add Vehicle{% else %}Edit Vehicle{% endif %}</h2>
+      <p class="muted">Add details like name, shop, price, and availability. Upload an image if available.</p>
+    </div>
+  </div>
+
+  <div class="card panel form-card veh-card">
+    <form method="post" enctype="multipart/form-data" class="form partner-form">
+      {% csrf_token %}
+
+      <div class="form-fields">
+        {{ form.as_p }}
+      </div>
+
+      <div class="form-actions">
+        <button class="btn veh-primary" type="submit">Save</button>
+        <a class="btn btn-outline veh-outline" href="{% url 'vehicles:rental_partner_vehicles' %}">Back</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
