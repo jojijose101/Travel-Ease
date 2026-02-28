@@ -36,6 +36,16 @@
       </button>
 
       <nav class="nav" id="mainNav">
+        <div class="nav-switch" aria-label="Switch section">
+  <a class="switch-btn {% if request.path|slice:":9" != "/vehicles" %}active{% endif %}"
+     href="{% url 'booking:hotel_list' %}">
+    Hotels
+  </a>
+  <a class="switch-btn {% if request.path|slice:":9" == "/vehicles" %}active vehicles{% endif %}"
+     href="{% url 'vehicles:vehicle_list' %}">
+    Vehicles
+  </a>
+</div>
         {% if user.is_authenticated %}
           <a href="{% url 'booking:my_bookings' %}">My Hotel Bookings</a>
           <a href="{% url 'vehicles:my_rentals' %}">My Rentals</a>

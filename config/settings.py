@@ -17,8 +17,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-RAZORPAY_KEY_ID = "rzp_test_SLGtQYvzz97uZJ"
-RAZORPAY_KEY_SECRET = "pPLaRRJW6ZcoqaANSyDZ4RVG"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 

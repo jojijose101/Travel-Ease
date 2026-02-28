@@ -90,6 +90,9 @@ body {
   border-radius:12px;
   cursor:pointer;
 }
+.nav-switch{
+  display:none;
+}
 /* ===== Cancel Booking Page ===== */
 .cancel-wrap{
   max-width: 560px;
@@ -220,6 +223,42 @@ body {
   .chip{
     text-align:center;
     padding: 10px 12px;
+  }
+  .nav-switch{
+    display:flex;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+
+  /* make it sit nicely at top of dropdown */
+  .nav.open .nav-switch{
+    margin-bottom: 6px;
+  }
+
+  .switch-btn{
+    flex:1;
+    text-align:center;
+    padding: 12px 10px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 13px;
+    color:#fff;
+    text-decoration:none;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .switch-btn.active{
+    background: rgba(255,255,255,0.22);
+  }
+
+  /* vehicles active gets light-red tint */
+  .switch-btn.vehicles.active{
+    background: rgba(255,77,77,0.22);
+    border-color: rgba(255,77,77,0.34);
   }
 }
 
